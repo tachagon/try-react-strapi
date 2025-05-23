@@ -2,6 +2,7 @@ import { RecoilRoot } from "recoil";
 import './App.css'
 
 import RestaurantsIndex from "./components/restaurants/index"
+import RestaurantsForm from "./components/restaurants/form";
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
       <div className="divider mt-4 mb-4">
         ==========================
       </div>
+
+      <RestaurantsForm />
     </RecoilRoot>
   )
 }
