@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 
 import { useRecoilState } from "recoil";
-import axios from 'axios'
 import { BlocksRenderer, type BlocksContent } from "@strapi/blocks-react-renderer"
 
-import { restaurantsAtom } from "../../state/restaurants";
+import { restaurantsAtom } from "../../state/restaurants"
+import api from "../../utils/api"
 
 type Restaurant = {
   id: number;
@@ -18,8 +18,7 @@ export default function RestaurantsIndex() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get('http://localhost:1337/api/restaurants')
-      console.log("res", res);
+      const res = await api.get('/restaurants')
 
       setRestaurants(res.data.data)
       setLoading(false)
@@ -36,7 +35,6 @@ export default function RestaurantsIndex() {
         ) : (
           <ul>
             {restaurants.map((restaurant: Restaurant) => (
-              console.log(restaurant),
               <li key={restaurant.id} className="p-4 border-b">
                 <div className="font-bold text-2xl">{restaurant.Name}</div>
                 <div className="mt-2">
