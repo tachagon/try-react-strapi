@@ -3,14 +3,8 @@ import { useState, useEffect } from 'react'
 import { useRecoilState } from "recoil";
 import { BlocksRenderer, type BlocksContent } from "@strapi/blocks-react-renderer"
 
-import { restaurantsAtom } from "../../state/restaurants"
+import { restaurantsAtom, type Restaurant } from "../../state/restaurants"
 import api from "../../utils/api"
-
-type Restaurant = {
-  id: number;
-  Name: string;
-  Description: BlocksContent;
-}
 
 export default function RestaurantsIndex() {
   const [loading, setLoading] = useState(true)
@@ -27,6 +21,35 @@ export default function RestaurantsIndex() {
     fetchData()
   }, [setRestaurants])
 
+  const renderDescription = (description: BlocksContent) =>{
+    if (!description) { return "" }
+
+    return (
+      <BlocksRenderer content={description} />
+    )
+  }
+
+  const renderDeleteButton = (documentId: string) => {
+    return (
+      <button
+        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+        onClick={async () => {
+          await api.delete(`/restaurants/${documentId}`)
+            .then(() => {
+              console.log("Deleted successfully")
+              // Remove the restaurant from the state
+              setRestaurants((prevRestaurants) => prevRestaurants.filter((restaurant: Restaurant) => restaurant.documentId !== documentId))
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }}
+      >
+        Delete
+      </button>
+    )
+  }
+
   return (
     <>
       <div className="flex flex-col items-center justify-center bg-gray-100">
@@ -40,19 +63,12 @@ export default function RestaurantsIndex() {
                 <div className="mt-2">
                   {renderDescription(restaurant.Description)}
                 </div>
+                {renderDeleteButton(restaurant.documentId)}
               </li>
             ))}
           </ul>
         )}
       </div>
     </>
-  )
-}
-
-function renderDescription(description: BlocksContent) {
-  if (!description) { return "" }
-
-  return (
-    <BlocksRenderer content={description} />
   )
 }
